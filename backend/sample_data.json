@@ -1,0 +1,131 @@
+[
+  {
+    "model": "subscriptions.plan",
+    "pk": 1,
+    "fields": {
+      "name": "Free",
+      "slug": "free",
+      "description": "Perfect for small teams getting started",
+      "price": "0.00",
+      "currency": "USD",
+      "billing_cycle": "monthly",
+      "max_users": 5,
+      "max_storage_gb": 1,
+      "max_api_calls": 1000,
+      "features": ["Basic Analytics", "Email Support", "5 Users"],
+      "is_active": true,
+      "is_popular": false,
+      "sort_order": 1,
+      "metadata": {},
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "subscriptions.plan",
+    "pk": 2,
+    "fields": {
+      "name": "Pro",
+      "slug": "pro",
+      "description": "Great for growing businesses",
+      "price": "29.99",
+      "currency": "USD",
+      "billing_cycle": "monthly",
+      "max_users": 25,
+      "max_storage_gb": 10,
+      "max_api_calls": 10000,
+      "features": ["Advanced Analytics", "Priority Support", "API Access", "25 Users"],
+      "is_active": true,
+      "is_popular": true,
+      "sort_order": 2,
+      "metadata": {},
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "subscriptions.plan",
+    "pk": 3,
+    "fields": {
+      "name": "Enterprise",
+      "slug": "enterprise",
+      "description": "For large organizations with advanced needs",
+      "price": "99.99",
+      "currency": "USD",
+      "billing_cycle": "monthly",
+      "max_users": 100,
+      "max_storage_gb": 100,
+      "max_api_calls": 100000,
+      "features": ["Custom Analytics", "24/7 Support", "Custom Integrations", "100 Users", "SLA"],
+      "is_active": true,
+      "is_popular": false,
+      "sort_order": 3,
+      "metadata": {},
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "tenants.tenant",
+    "pk": 1,
+    "fields": {
+      "name": "TechCorp",
+      "slug": "techcorp",
+      "description": "Technology company specializing in software development",
+      "is_active": true,
+      "contact_email": "admin@techcorp.com",
+      "contact_phone": "+1-555-0123",
+      "address": "123 Tech Street",
+      "city": "San Francisco",
+      "state": "CA",
+      "country": "USA",
+      "postal_code": "94105",
+      "settings": {},
+      "metadata": {},
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "tenants.tenant",
+    "pk": 2,
+    "fields": {
+      "name": "StartupXYZ",
+      "slug": "startupxyz",
+      "description": "Innovative startup in the fintech space",
+      "is_active": true,
+      "contact_email": "hello@startupxyz.com",
+      "contact_phone": "+1-555-0456",
+      "address": "456 Innovation Ave",
+      "city": "New York",
+      "state": "NY",
+      "country": "USA",
+      "postal_code": "10001",
+      "settings": {},
+      "metadata": {},
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "tenants.tenant",
+    "pk": 3,
+    "fields": {
+      "name": "EnterpriseABC",
+      "slug": "enterpriseabc",
+      "description": "Large enterprise with global operations",
+      "is_active": true,
+      "contact_email": "it@enterpriseabc.com",
+      "contact_phone": "+1-555-0789",
+      "address": "789 Corporate Blvd",
+      "city": "Chicago",
+      "state": "IL",
+      "country": "USA",
+      "postal_code": "60601",
+      "settings": {},
+      "metadata": {},
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  }
+] 
