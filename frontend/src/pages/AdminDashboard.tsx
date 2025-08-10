@@ -48,7 +48,7 @@ import {
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar } from 'recharts';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { toast } from 'react-hot-toast';
-import { tenantsAPI, subscriptionsAPI, billingAPI } from '../services/api';
+import { tenantsAPI, subscriptionsAPI, billingAPI } from '../services/api.ts';
 
 interface DashboardStats {
   totalTenants: number;

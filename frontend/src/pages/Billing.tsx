@@ -54,7 +54,7 @@ import {
 } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { toast } from 'react-hot-toast';
-import { billingAPI, subscriptionsAPI } from '../services/api';
+import { billingAPI, subscriptionsAPI } from '../services/api.ts';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar } from 'recharts';
 
 interface Invoice {

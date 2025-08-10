@@ -32,7 +32,7 @@ import {
   Logout,
 } from '@mui/icons-material';
 
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext.tsx';
 
 const drawerWidth = 240;
 
@@ -83,15 +83,16 @@ const Layout: React.FC = () => {
         },
         {
           text: 'Plans',
-          icon: <Payment />,
+          icon: <AdminPanelSettings />,
           path: '/admin/plans',
         }
       );
     } else {
+      // Tenant Admin/User navigation
       items.push(
         {
           text: 'Plans',
-          icon: <Payment />,
+          icon: <AdminPanelSettings />,
           path: '/plans',
         },
         {
@@ -115,19 +116,13 @@ const Layout: React.FC = () => {
     return items;
   };
 
-  const navigationItems = getNavigationItems();
-
   const drawer = (
     <div>
-      <Toolbar>
-        <Typography variant="h6" noWrap component="div">
-          Eshtarek
-        </Typography>
-      </Toolbar>
+      <Toolbar />
       <Divider />
       <List>
-        {navigationItems.map((item) => (
-          <ListItem key={item.text} disablePadding>
+        {getNavigationItems().map((item, index) => (
+          <ListItem key={index} disablePadding>
             <ListItemButton
               selected={location.pathname === item.path}
               onClick={() => navigate(item.path)}
@@ -162,39 +157,36 @@ const Layout: React.FC = () => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            {isAdmin ? 'Admin Dashboard' : 'Tenant Dashboard'}
+            Eshtarek
           </Typography>
-          
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <IconButton color="inherit">
-              <Badge badgeContent={4} color="error">
-                <Notifications />
-              </Badge>
-            </IconButton>
-            
-            <IconButton
-              onClick={handleProfileMenuOpen}
-              color="inherit"
-            >
-              <Avatar sx={{ width: 32, height: 32 }}>
-                {user?.first_name?.[0] || user?.email?.[0] || 'U'}
-              </Avatar>
-            </IconButton>
-          </Box>
+
+          <IconButton color="inherit" onClick={handleProfileMenuOpen}>
+            <Badge badgeContent={4} color="error">
+              <AccountCircle />
+            </Badge>
+          </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleProfileMenuClose}
+          >
+            <MenuItem onClick={() => navigate('/settings')}>Profile</MenuItem>
+            <MenuItem onClick={handleLogout}>Logout</MenuItem>
+          </Menu>
         </Toolbar>
       </AppBar>
-      
+
       <Box
         component="nav"
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+        aria-label="mailbox folders"
       >
+        {/* Mobile drawer */}
         <Drawer
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true,
-          }}
+          ModalProps={{ keepMounted: true }}
           sx={{
             display: { xs: 'block', sm: 'none' },
             '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
@@ -202,6 +194,8 @@ const Layout: React.FC = () => {
         >
           {drawer}
         </Drawer>
+
+        {/* Desktop drawer */}
         <Drawer
           variant="permanent"
           sx={{
@@ -213,41 +207,14 @@ const Layout: React.FC = () => {
           {drawer}
         </Drawer>
       </Box>
-      
+
       <Box
         component="main"
-        sx={{
-          flexGrow: 1,
-          p: 3,
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-        }}
+        sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
       >
         <Toolbar />
         <Outlet />
       </Box>
-
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleProfileMenuClose}
-        onClick={handleProfileMenuClose}
-        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-      >
-        <MenuItem onClick={() => navigate('/settings')}>
-          <ListItemIcon>
-            <AccountCircle fontSize="small" />
-          </ListItemIcon>
-          Profile
-        </MenuItem>
-        <Divider />
-        <MenuItem onClick={handleLogout}>
-          <ListItemIcon>
-            <Logout fontSize="small" />
-          </ListItemIcon>
-          Logout
-        </MenuItem>
-      </Menu>
     </Box>
   );
 };

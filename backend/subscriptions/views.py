@@ -1,4 +1,5 @@
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, views
+from rest_framework.response import Response
 from .models import Plan, Subscription
 from .serializers import PlanSerializer, SubscriptionSerializer
 from accounts.permissions import IsTenantAdminOrReadOnly, IsSystemAdmin
@@ -59,4 +60,26 @@ class SubscriptionDetailView(generics.RetrieveUpdateDestroyAPIView):
             return Subscription.objects.all()
         elif user.tenant:
             return Subscription.objects.filter(tenant=user.tenant)
-        return Subscription.objects.none() 
+        return Subscription.objects.none()
+
+
+class UsageView(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        tenant = request.user.tenant
+        if not tenant:
+            return Response({
+                'error': 'No tenant associated'
+            }, status=400)
+        subscription = tenant.active_subscription
+        usage = subscription.current_usage if subscription else {'users': tenant.user_count, 'storage_gb': 0, 'api_calls': 0}
+        limits = {
+            'max_users': subscription.plan.max_users if subscription else 0,
+            'max_storage_gb': subscription.plan.max_storage_gb if subscription else 0,
+            'max_api_calls': subscription.plan.max_api_calls if subscription else 0,
+        }
+        return Response({
+            'usage': usage,
+            'limits': limits
+        }) 

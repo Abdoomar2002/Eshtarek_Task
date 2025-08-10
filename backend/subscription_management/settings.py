@@ -162,8 +162,32 @@ SIMPLE_JWT = {
 }
 
 # CORS settings
-CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ALLOWED_ORIGINS', 'http://localhost:3000,http://127.0.0.1:3000').split(',')
+CORS_ALLOWED_ORIGINS = os.environ.get(
+    'CORS_ALLOWED_ORIGINS',
+    'http://localhost:3000,http://127.0.0.1:3000'
+).split(',')
 CORS_ALLOW_CREDENTIALS = True
+# Expose useful headers to the frontend
+CORS_EXPOSE_HEADERS = [
+    'Content-Type', 'Authorization', 'X-Tenant-ID', 'X-Tenant-Name'
+]
+# Optional: allow common headers
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+
+# CSRF trusted origins (needed for cookie-based auth; safe to set for local dev)
+CSRF_TRUSTED_ORIGINS = os.environ.get(
+    'CSRF_TRUSTED_ORIGINS',
+    'http://localhost:3000,http://127.0.0.1:3000'
+).split(',')
 
 # Redis settings
 REDIS_URL = os.environ.get('REDIS_URL', 'redis://redis:6379/0')

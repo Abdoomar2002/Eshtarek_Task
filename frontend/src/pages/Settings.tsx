@@ -61,12 +61,13 @@ import {
   Delete,
   Warning,
   CheckCircle,
-  Info
+  Info,
+  Timer,
 } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { toast } from 'react-hot-toast';
-import { authAPI } from '../services/api';
-import { useAuth } from '../contexts/AuthContext';
+import { authAPI } from '../services/api.ts';
+import { useAuth } from '../contexts/AuthContext.tsx';
 
 interface UserProfile {
   first_name: string;
@@ -124,9 +125,10 @@ const Settings: React.FC = () => {
     first_name: user?.first_name || '',
     last_name: user?.last_name || '',
     email: user?.email || '',
-    phone_number: user?.phone_number || '',
+    phone_number: (user as any)?.phone_number || '',
     timezone: 'UTC',
-    language: 'en'
+    language: 'en',
+    avatar: (user as any)?.avatar || undefined,
   });
 
   // Security settings state

@@ -2,18 +2,18 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Box } from '@mui/material';
 
-import { useAuth } from './contexts/AuthContext';
-import Layout from './components/Layout';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
-import Plans from './pages/Plans';
-import Users from './pages/Users';
-import Billing from './pages/Billing';
-import Settings from './pages/Settings';
-import AdminDashboard from './pages/AdminDashboard';
-import AdminTenants from './pages/AdminTenants';
-import AdminPlans from './pages/AdminPlans';
+import { useAuth } from './contexts/AuthContext.tsx';
+import Layout from './components/Layout.tsx';
+import Login from './pages/Login.tsx';
+import Register from './pages/Register.tsx';
+import Dashboard from './pages/Dashboard.tsx';
+import Plans from './pages/Plans.tsx';
+import Users from './pages/Users.tsx';
+import Billing from './pages/Billing.tsx';
+import Settings from './pages/Settings.tsx';
+import AdminDashboard from './pages/AdminDashboard.tsx';
+import AdminTenants from './pages/AdminTenants.tsx';
+import AdminPlans from './pages/AdminPlans.tsx';
 
 // Protected Route component
 const ProtectedRoute: React.FC<{ children: React.ReactNode; adminOnly?: boolean }> = ({ 

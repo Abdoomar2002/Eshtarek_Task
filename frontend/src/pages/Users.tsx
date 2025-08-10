@@ -1,69 +1,71 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  Typography,
   Box,
   Grid,
   Card,
   CardContent,
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Chip,
-  IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
+  Typography,
   TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Alert,
-  CircularProgress,
-  Avatar,
-  Menu,
+  Button,
   List,
   ListItem,
   ListItemText,
   ListItemAvatar,
   Divider,
-  Switch,
-  FormControlLabel,
+  Avatar,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Badge
+  Snackbar,
+  Alert,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Chip,
+  IconButton,
+  Badge,
+  Switch,
+  FormControlLabel,
+  TableContainer,
+  Paper,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Menu,
+  MenuItem as MUIMenuItem,
+  CircularProgress,
 } from '@mui/material';
 import {
-  Add,
-  MoreVert,
-  Edit,
-  Delete,
+  ExpandMore,
   Visibility,
-  Person,
   Email,
   Phone,
-  AdminPanelSettings,
-  PersonAdd,
-  Block,
-  CheckCircle,
-  Warning,
-  ExpandMore,
-  Send,
   Refresh,
   FilterList,
-  Search
+  PersonAdd,
+  Add,
+  Person,
+  CheckCircle,
+  AdminPanelSettings,
+  Warning,
+  Search,
+  MoreVert,
+  Block,
+  Edit,
+  Delete,
+  Send,
 } from '@mui/icons-material';
+import { usersAPI } from '../services/api.ts';
+import { useAuth } from '../contexts/AuthContext.tsx';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { toast } from 'react-hot-toast';
-import { usersAPI } from '../services/api';
-import { useAuth } from '../contexts/AuthContext';
 
 interface User {
   id: string;
@@ -808,12 +810,12 @@ const Users: React.FC = () => {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
       >
-        <MenuItem onClick={handleEdit}>
+        <MUIMenuItem onClick={handleEdit}>
           <Edit sx={{ mr: 1 }} /> Edit
-        </MenuItem>
-        <MenuItem onClick={handleDelete}>
+        </MUIMenuItem>
+        <MUIMenuItem onClick={handleDelete}>
           <Delete sx={{ mr: 1 }} /> Delete
-        </MenuItem>
+        </MUIMenuItem>
       </Menu>
     </Box>
   );

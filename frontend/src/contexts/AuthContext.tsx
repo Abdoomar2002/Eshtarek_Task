@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import { jwtDecode } from 'jwt-decode';
+import jwtDecode from 'jwt-decode';
 import toast from 'react-hot-toast';
 
-import { api } from '../services/api';
+import { api } from '../services/api.ts';
 
 // Types
 interface User {
@@ -105,7 +105,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Check if token is expired
   const isTokenExpired = (token: string): boolean => {
     try {
-      const decoded = jwtDecode(token);
+      const decoded: any = jwtDecode(token);
       const currentTime = Date.now() / 1000;
       return decoded.exp ? decoded.exp < currentTime : true;
     } catch {

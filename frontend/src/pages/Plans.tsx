@@ -52,8 +52,8 @@ import {
 } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { toast } from 'react-hot-toast';
-import { plansAPI, subscriptionsAPI } from '../services/api';
-import { useAuth } from '../contexts/AuthContext';
+import { plansAPI, subscriptionsAPI } from '../services/api.ts';
+import { useAuth } from '../contexts/AuthContext.tsx';
 
 interface Plan {
   id: string;

@@ -1,9 +1,12 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { jwtDecode } from 'jwt-decode';
+import axios, { type AxiosInstance, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
+import jwtDecode from 'jwt-decode';
+
+// Prefer CRA compile-time env; fallback to backend dev port
+const baseURL: string = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8080/api';
 
 // Create axios instance
 const api: AxiosInstance = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:8000/api',
+  baseURL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -12,16 +15,16 @@ const api: AxiosInstance = axios.create({
 
 // Request interceptor to add auth token
 api.interceptors.request.use(
-  (config: AxiosRequestConfig) => {
+  (config: InternalAxiosRequestConfig) => {
     const tokens = localStorage.getItem('tokens');
     if (tokens) {
       try {
         const parsedTokens = JSON.parse(tokens);
         if (parsedTokens.access) {
           config.headers = {
-            ...config.headers,
+            ...(config.headers as any),
             Authorization: `Bearer ${parsedTokens.access}`,
-          };
+          } as any;
         }
       } catch (error) {
         console.error('Error parsing tokens:', error);
@@ -40,7 +43,7 @@ api.interceptors.response.use(
     return response;
   },
   async (error) => {
-    const originalRequest = error.config;
+    const originalRequest = error.config as any;
 
     // If the error is 401 and we haven't already tried to refresh
     if (error.response?.status === 401 && !originalRequest._retry) {
@@ -54,9 +57,9 @@ api.interceptors.response.use(
           // Check if refresh token is expired
           const isRefreshExpired = (token: string): boolean => {
             try {
-              const decoded = jwtDecode(token);
+              const decoded: any = jwtDecode(token);
               const currentTime = Date.now() / 1000;
-              return decoded.exp ? decoded.exp < currentTime : true;
+              return decoded?.exp ? decoded.exp < currentTime : true;
             } catch {
               return true;
             }
@@ -65,7 +68,7 @@ api.interceptors.response.use(
           if (!isRefreshExpired(parsedTokens.refresh)) {
             // Try to refresh the token
             const response = await axios.post(
-              `${process.env.REACT_APP_API_URL || 'http://localhost:8000/api'}/auth/token/refresh/`,
+              `${baseURL}/auth/token/refresh/`,
               { refresh: parsedTokens.refresh }
             );
 
@@ -78,6 +81,7 @@ api.interceptors.response.use(
             localStorage.setItem('tokens', JSON.stringify(newTokens));
 
             // Update the original request with new token
+            originalRequest.headers = originalRequest.headers || {};
             originalRequest.headers.Authorization = `Bearer ${newTokens.access}`;
 
             // Retry the original request
@@ -134,17 +138,17 @@ export const tenantsAPI = {
 };
 
 export const plansAPI = {
-  getPlans: () => api.get('/plans/'),
+  getPlans: () => api.get('/subscriptions/plans/'),
   
-  getPlan: (id: number) => api.get(`/plans/${id}/`),
+  getPlan: (id: number) => api.get(`/subscriptions/plans/${id}/`),
   
   createPlan: (planData: any) =>
-    api.post('/plans/', planData),
+    api.post('/subscriptions/plans/', planData),
   
   updatePlan: (id: number, planData: any) =>
-    api.put(`/plans/${id}/`, planData),
+    api.put(`/subscriptions/plans/${id}/`, planData),
   
-  deletePlan: (id: number) => api.delete(`/plans/${id}/`),
+  deletePlan: (id: number) => api.delete(`/subscriptions/plans/${id}/`),
 };
 
 export const subscriptionsAPI = {
@@ -160,6 +164,8 @@ export const subscriptionsAPI = {
   
   cancelSubscription: (id: number) =>
     api.delete(`/subscriptions/${id}/`),
+
+  getUsage: () => api.get('/subscriptions/usage/'),
 };
 
 export const billingAPI = {
@@ -171,6 +177,8 @@ export const billingAPI = {
     api.post('/billing/process-payment/', paymentData),
   
   getBillingHistory: () => api.get('/billing/history/'),
+  
+  getAnalytics: () => api.get('/billing/analytics/'),
 };
 
 export const usersAPI = {

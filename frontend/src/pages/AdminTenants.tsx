@@ -49,7 +49,7 @@ import {
 } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { toast } from 'react-hot-toast';
-import { tenantsAPI, subscriptionsAPI } from '../services/api';
+import { tenantsAPI, subscriptionsAPI } from '../services/api.ts';
 
 interface Tenant {
   id: string;

@@ -74,7 +74,10 @@ The system comes with pre-loaded sample data:
 {
   "email": "user@example.com",
   "password": "password123",
-  "tenant_name": "Company Name"
+  "tenant": {
+    "name": "Company Name",
+    "description": "Company description"
+  }
 }
 ```
 
@@ -118,6 +121,7 @@ The system comes with pre-loaded sample data:
 The system includes a mock billing system that simulates Stripe-like functionality:
 - `POST /api/billing/process-payment/` - Process payment
 - `GET /api/billing/invoices/` - Get billing history
+- `GET /api/billing/analytics/` - Get billing analytics
 
 ## 👥 User Management
 
@@ -157,7 +161,27 @@ The system includes a mock billing system that simulates Stripe-like functionali
 - **redis**: Cache and session storage
 
 ### Environment Variables
-See `.env.example` for required environment variables.
+```env
+# Database
+DATABASE_URL=postgresql://postgres:postgres123@database:5432/subscription_management
+DB_NAME=subscription_management
+DB_USER=postgres
+DB_PASSWORD=postgres123
+DB_HOST=database
+DB_PORT=5432
+
+# Redis
+REDIS_URL=redis://redis:6379/0
+
+# Django
+SECRET_KEY=your-secret-key-change-in-production
+DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
+CORS_ALLOWED_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+
+# Frontend
+REACT_APP_API_URL=http://localhost:8000/api
+```
 
 ## 🧪 Testing
 
