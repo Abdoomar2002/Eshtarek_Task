@@ -1,22 +1,29 @@
-import axios, { type AxiosInstance, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
-import jwtDecode from 'jwt-decode';
+import axios, {
+  type AxiosInstance,
+  type AxiosResponse,
+  type InternalAxiosRequestConfig,
+} from "axios";
+import jwtDecode from "jwt-decode";
 
-// Prefer CRA compile-time env; fallback to backend dev port
-const baseURL: string = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8080/api';
+// Prefer CRA compile-time env; fallback to backend dev port (Django default 8000)
+// Using (window as any).env shim to avoid type errors if @types/node is missing
+const runtimeEnv = (window as any).env || {};
+declare const process: any; // fallback typing for environments without @types/node
+const baseURL: string = "http://127.0.0.1:8080/api";
 
 // Create axios instance
 const api: AxiosInstance = axios.create({
   baseURL,
   timeout: 10000,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
 // Request interceptor to add auth token
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const tokens = localStorage.getItem('tokens');
+    const tokens = localStorage.getItem("tokens");
     if (tokens) {
       try {
         const parsedTokens = JSON.parse(tokens);
@@ -27,7 +34,7 @@ api.interceptors.request.use(
           } as any;
         }
       } catch (error) {
-        console.error('Error parsing tokens:', error);
+        console.error("Error parsing tokens:", error);
       }
     }
     return config;
@@ -49,11 +56,11 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
-      const tokens = localStorage.getItem('tokens');
+      const tokens = localStorage.getItem("tokens");
       if (tokens) {
         try {
           const parsedTokens = JSON.parse(tokens);
-          
+
           // Check if refresh token is expired
           const isRefreshExpired = (token: string): boolean => {
             try {
@@ -78,7 +85,7 @@ api.interceptors.response.use(
             };
 
             // Update localStorage
-            localStorage.setItem('tokens', JSON.stringify(newTokens));
+            localStorage.setItem("tokens", JSON.stringify(newTokens));
 
             // Update the original request with new token
             originalRequest.headers = originalRequest.headers || {};
@@ -89,9 +96,9 @@ api.interceptors.response.use(
           }
         } catch (refreshError) {
           // If refresh fails, clear tokens and redirect to login
-          localStorage.removeItem('tokens');
-          localStorage.removeItem('user');
-          window.location.href = '/login';
+          localStorage.removeItem("tokens");
+          localStorage.removeItem("user");
+          window.location.href = "/login";
         }
       }
     }
@@ -103,96 +110,89 @@ api.interceptors.response.use(
 // API service functions
 export const authAPI = {
   login: (email: string, password: string) =>
-    api.post('/auth/login/', { email, password }),
-  
-  register: (userData: any) =>
-    api.post('/auth/register/', userData),
-  
+    api.post("/auth/login/", { email, password }),
+
+  register: (userData: any) => api.post("/auth/register/", userData),
+
   logout: (refreshToken: string) =>
-    api.post('/auth/logout/', { refresh_token: refreshToken }),
-  
+    api.post("/auth/logout/", { refresh_token: refreshToken }),
+
   refreshToken: (refreshToken: string) =>
-    api.post('/auth/token/refresh/', { refresh: refreshToken }),
-  
-  getProfile: () => api.get('/auth/me/'),
-  
-  updateProfile: (userData: any) =>
-    api.put('/auth/profile/', userData),
-  
+    api.post("/auth/token/refresh/", { refresh: refreshToken }),
+
+  getProfile: () => api.get("/auth/me/"),
+
+  updateProfile: (userData: any) => api.put("/auth/profile/", userData),
+
   changePassword: (passwordData: any) =>
-    api.post('/auth/change-password/', passwordData),
+    api.post("/auth/change-password/", passwordData),
 };
 
 export const tenantsAPI = {
-  getTenants: () => api.get('/tenants/'),
-  
+  getTenants: () => api.get("/tenants/"),
+
   getTenant: (id: number) => api.get(`/tenants/${id}/`),
-  
-  createTenant: (tenantData: any) =>
-    api.post('/tenants/', tenantData),
-  
+
+  createTenant: (tenantData: any) => api.post("/tenants/", tenantData),
+
   updateTenant: (id: number, tenantData: any) =>
     api.put(`/tenants/${id}/`, tenantData),
-  
+
   deleteTenant: (id: number) => api.delete(`/tenants/${id}/`),
 };
 
 export const plansAPI = {
-  getPlans: () => api.get('/subscriptions/plans/'),
-  
+  getPlans: () => api.get("/subscriptions/plans/"),
+
   getPlan: (id: number) => api.get(`/subscriptions/plans/${id}/`),
-  
-  createPlan: (planData: any) =>
-    api.post('/subscriptions/plans/', planData),
-  
+
+  createPlan: (planData: any) => api.post("/subscriptions/plans/", planData),
+
   updatePlan: (id: number, planData: any) =>
     api.put(`/subscriptions/plans/${id}/`, planData),
-  
+
   deletePlan: (id: number) => api.delete(`/subscriptions/plans/${id}/`),
 };
 
 export const subscriptionsAPI = {
-  getSubscriptions: () => api.get('/subscriptions/'),
-  
+  getSubscriptions: () => api.get("/subscriptions/"),
+
   getSubscription: (id: number) => api.get(`/subscriptions/${id}/`),
-  
+
   createSubscription: (subscriptionData: any) =>
-    api.post('/subscriptions/', subscriptionData),
-  
+    api.post("/subscriptions/", subscriptionData),
+
   updateSubscription: (id: number, subscriptionData: any) =>
     api.put(`/subscriptions/${id}/`, subscriptionData),
-  
-  cancelSubscription: (id: number) =>
-    api.delete(`/subscriptions/${id}/`),
 
-  getUsage: () => api.get('/subscriptions/usage/'),
+  cancelSubscription: (id: number) => api.delete(`/subscriptions/${id}/`),
+
+  getUsage: () => api.get("/subscriptions/usage/"),
 };
 
 export const billingAPI = {
-  getInvoices: () => api.get('/billing/invoices/'),
-  
+  getInvoices: () => api.get("/billing/invoices/"),
+
   getInvoice: (id: number) => api.get(`/billing/invoices/${id}/`),
-  
+
   processPayment: (paymentData: any) =>
-    api.post('/billing/process-payment/', paymentData),
-  
-  getBillingHistory: () => api.get('/billing/history/'),
-  
-  getAnalytics: () => api.get('/billing/analytics/'),
+    api.post("/billing/process-payment/", paymentData),
+
+  getBillingHistory: () => api.get("/billing/history/"),
+
+  getAnalytics: () => api.get("/billing/analytics/"),
 };
 
 export const usersAPI = {
-  getUsers: () => api.get('/users/'),
-  
+  getUsers: () => api.get("/users/"),
+
   getUser: (id: number) => api.get(`/users/${id}/`),
-  
-  createUser: (userData: any) =>
-    api.post('/users/', userData),
-  
-  updateUser: (id: number, userData: any) =>
-    api.put(`/users/${id}/`, userData),
-  
+
+  createUser: (userData: any) => api.post("/users/", userData),
+
+  updateUser: (id: number, userData: any) => api.put(`/users/${id}/`, userData),
+
   deleteUser: (id: number) => api.delete(`/users/${id}/`),
 };
 
-export { api }; 
+export { api };

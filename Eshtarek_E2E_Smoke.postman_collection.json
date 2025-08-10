@@ -1,0 +1,759 @@
+{
+  "info": {
+    "name": "Eshtarek E2E Smoke Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "d59234a7-60d2-4610-8101-31093d253f89"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "access_token",
+      "value": ""
+    },
+    {
+      "key": "tenant_token",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register (Tenant Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/register/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"tenantadmin@techcorp.com\",\n  \"password\": \"tech123\",\n  \"tenant_name\": \"TechCorp\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "",
+                  "const token = pm.environment.get(\"\") || pm.collectionVariables.get(\"\") || pm.variables.get(\"\");",
+                  "if (token) { pm.request.headers.upsert({ key: \"Authorization\", value: \"Bearer \" + token }); }"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 2xx\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"JSON\", function () { pm.response.to.have.jsonBody(); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/login/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@eshtarek.com\",\n  \"password\": \"admin123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 2xx\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"JSON\", function () { pm.response.to.have.jsonBody(); });",
+                  "var data = pm.response.json();",
+                  "pm.environment.set(\"access_token\", data.access || data.access_token || data.token);",
+                  "pm.test(\"Saved admin token\", function(){ pm.expect(pm.environment.get(\"access_token\")).to.exist; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login (Tenant TechCorp)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/login/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"techcorp@example.com\",\n  \"password\": \"tech123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 2xx\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"JSON\", function () { pm.response.to.have.jsonBody(); });",
+                  "var data = pm.response.json();",
+                  "pm.environment.set(\"tenant_token\", data.access || data.access_token || data.token);",
+                  "pm.test(\"Saved tenant token\", function(){ pm.expect(pm.environment.get(\"tenant_token\")).to.exist; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Me (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/auth/me/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "",
+                  "const token = pm.environment.get(\"access_token\") || pm.collectionVariables.get(\"access_token\") || pm.variables.get(\"access_token\");",
+                  "if (token) { pm.request.headers.upsert({ key: \"Authorization\", value: \"Bearer \" + token }); }"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 2xx\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"JSON\", function () { pm.response.to.have.jsonBody(); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Me (Tenant)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/auth/me/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "",
+                  "const token = pm.environment.get(\"tenant_token\") || pm.collectionVariables.get(\"tenant_token\") || pm.variables.get(\"tenant_token\");",
+                  "if (token) { pm.request.headers.upsert({ key: \"Authorization\", value: \"Bearer \" + token }); }"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 2xx\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"JSON\", function () { pm.response.to.have.jsonBody(); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Tenants (Admin Only)",
+      "item": [
+        {
+          "name": "List Tenants",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/tenants/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "tenants"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "",
+                  "const token = pm.environment.get(\"access_token\") || pm.collectionVariables.get(\"access_token\") || pm.variables.get(\"access_token\");",
+                  "if (token) { pm.request.headers.upsert({ key: \"Authorization\", value: \"Bearer \" + token }); }"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 2xx\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"JSON\", function () { pm.response.to.have.jsonBody(); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Tenant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/tenants/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "tenants"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"DemoCo\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "",
+                  "const token = pm.environment.get(\"access_token\") || pm.collectionVariables.get(\"access_token\") || pm.variables.get(\"access_token\");",
+                  "if (token) { pm.request.headers.upsert({ key: \"Authorization\", value: \"Bearer \" + token }); }"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 2xx\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"JSON\", function () { pm.response.to.have.jsonBody(); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Tenant by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/tenants/1/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "tenants",
+                "1"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "",
+                  "const token = pm.environment.get(\"access_token\") || pm.collectionVariables.get(\"access_token\") || pm.variables.get(\"access_token\");",
+                  "if (token) { pm.request.headers.upsert({ key: \"Authorization\", value: \"Bearer \" + token }); }"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 2xx\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"JSON\", function () { pm.response.to.have.jsonBody(); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Plans",
+      "item": [
+        {
+          "name": "List Plans",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/subscriptions/plans/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subscriptions",
+                "plans"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "",
+                  "const token = pm.environment.get(\"tenant_token\") || pm.collectionVariables.get(\"tenant_token\") || pm.variables.get(\"tenant_token\");",
+                  "if (token) { pm.request.headers.upsert({ key: \"Authorization\", value: \"Bearer \" + token }); }"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 2xx\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"JSON\", function () { pm.response.to.have.jsonBody(); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Plan (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/subscriptions/plans/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subscriptions",
+                "plans"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Pro\",\n  \"price\": 29.99,\n  \"max_users\": 25,\n  \"features\": [\n    \"Advanced Analytics\"\n  ],\n  \"is_active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "",
+                  "const token = pm.environment.get(\"access_token\") || pm.collectionVariables.get(\"access_token\") || pm.variables.get(\"access_token\");",
+                  "if (token) { pm.request.headers.upsert({ key: \"Authorization\", value: \"Bearer \" + token }); }"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 2xx\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"JSON\", function () { pm.response.to.have.jsonBody(); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Subscriptions",
+      "item": [
+        {
+          "name": "My Subscriptions (Tenant)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/subscriptions/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subscriptions"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "",
+                  "const token = pm.environment.get(\"tenant_token\") || pm.collectionVariables.get(\"tenant_token\") || pm.variables.get(\"tenant_token\");",
+                  "if (token) { pm.request.headers.upsert({ key: \"Authorization\", value: \"Bearer \" + token }); }"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 2xx\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"JSON\", function () { pm.response.to.have.jsonBody(); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Subscribe to Plan (Tenant)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/subscriptions/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "subscriptions"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"plan_id\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "",
+                  "const token = pm.environment.get(\"tenant_token\") || pm.collectionVariables.get(\"tenant_token\") || pm.variables.get(\"tenant_token\");",
+                  "if (token) { pm.request.headers.upsert({ key: \"Authorization\", value: \"Bearer \" + token }); }"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 2xx\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"JSON\", function () { pm.response.to.have.jsonBody(); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Users (Tenant-scoped)",
+      "item": [
+        {
+          "name": "List Users (Tenant)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/users/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "",
+                  "const token = pm.environment.get(\"tenant_token\") || pm.collectionVariables.get(\"tenant_token\") || pm.variables.get(\"tenant_token\");",
+                  "if (token) { pm.request.headers.upsert({ key: \"Authorization\", value: \"Bearer \" + token }); }"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 2xx\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"JSON\", function () { pm.response.to.have.jsonBody(); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create User (Tenant)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "users"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"member@techcorp.com\",\n  \"password\": \"pass123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "",
+                  "const token = pm.environment.get(\"tenant_token\") || pm.collectionVariables.get(\"tenant_token\") || pm.variables.get(\"tenant_token\");",
+                  "if (token) { pm.request.headers.upsert({ key: \"Authorization\", value: \"Bearer \" + token }); }"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 2xx\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"JSON\", function () { pm.response.to.have.jsonBody(); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Billing (Mock)",
+      "item": [
+        {
+          "name": "Process Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/billing/process-payment/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "billing",
+                "process-payment"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 10.0,\n  \"currency\": \"USD\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "",
+                  "const token = pm.environment.get(\"tenant_token\") || pm.collectionVariables.get(\"tenant_token\") || pm.variables.get(\"tenant_token\");",
+                  "if (token) { pm.request.headers.upsert({ key: \"Authorization\", value: \"Bearer \" + token }); }"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 2xx\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"JSON\", function () { pm.response.to.have.jsonBody(); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Invoices",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/billing/invoices/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "billing",
+                "invoices"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "",
+                  "const token = pm.environment.get(\"tenant_token\") || pm.collectionVariables.get(\"tenant_token\") || pm.variables.get(\"tenant_token\");",
+                  "if (token) { pm.request.headers.upsert({ key: \"Authorization\", value: \"Bearer \" + token }); }"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status 2xx\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"JSON\", function () { pm.response.to.have.jsonBody(); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

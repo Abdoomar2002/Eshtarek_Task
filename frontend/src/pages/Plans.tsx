@@ -184,7 +184,7 @@ const Plans: React.FC = () => {
     );
   }
 
-  const availablePlans = plans?.filter(plan => plan.is_active) || [];
+  const availablePlans = plans?.data?.results?.filter(plan => plan.is_active) || [];
 
   return (
     <Box>

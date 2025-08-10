@@ -212,7 +212,7 @@ const Billing: React.FC = () => {
     );
   }
 
-  const unpaidInvoices = invoices?.filter(invoice => invoice.status === 'pending' || invoice.status === 'overdue') || [];
+  const unpaidInvoices = invoices?.data?.results?.filter(invoice => invoice.status === 'pending' || invoice.status === 'overdue') || [];
   const totalOutstanding = unpaidInvoices.reduce((sum, invoice) => sum + parseFloat(invoice.total_amount), 0);
 
   return (
@@ -251,7 +251,8 @@ const Billing: React.FC = () => {
                     Paid
                   </Typography>
                   <Typography variant="h4">
-                    {invoices?.filter(i => i.status === 'paid').length || 0}
+                    
+                    {invoices?.data?.results?.filter(i => i.status === 'paid').length || 0}
                   </Typography>
                 </Box>
               </Box>
@@ -402,7 +403,7 @@ const Billing: React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {invoices?.map((invoice) => (
+                {invoices?.data?.results?.map((invoice) => (
                   <TableRow key={invoice.id} hover>
                     <TableCell>
                       <Typography variant="subtitle2">

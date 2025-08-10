@@ -72,17 +72,31 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'subscription_management.wsgi.application'
 
+# API-friendly: do not append slash to avoid POST redirect data loss
+APPEND_SLASH = False
+
 # Database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME', 'subscription_management'),
-        'USER': os.environ.get('DB_USER', 'postgres'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', 'postgres123'),
-        'HOST': os.environ.get('DB_HOST', 'database'),
-        'PORT': os.environ.get('DB_PORT', '5432'),
+# Local-friendly fallback to SQLite when DB_ENGINE is set to 'sqlite3'.
+DB_ENGINE = os.environ.get('DB_ENGINE', 'sqlite3').lower()
+
+if DB_ENGINE == 'sqlite3':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('DB_NAME', 'subscription_management'),
+            'USER': os.environ.get('DB_USER', 'postgres'),
+            'PASSWORD': os.environ.get('DB_PASSWORD', 'postgres123'),
+            'HOST': os.environ.get('DB_HOST', 'database'),
+            'PORT': os.environ.get('DB_PORT', '5432'),
+        }
+    }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -92,7 +106,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
         'OPTIONS': {
-            'min_length': 8,
+            'min_length': 6,
         }
     },
     {

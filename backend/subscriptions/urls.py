@@ -1,10 +1,10 @@
-from django.urls import path
+from django.urls import re_path
 from .views import PlanListView, PlanDetailView, SubscriptionListView, SubscriptionDetailView, UsageView
 
 urlpatterns = [
-    path('plans/', PlanListView.as_view(), name='plan-list'),
-    path('plans/<int:pk>/', PlanDetailView.as_view(), name='plan-detail'),
-    path('', SubscriptionListView.as_view(), name='subscription-list'),
-    path('<int:pk>/', SubscriptionDetailView.as_view(), name='subscription-detail'),
-    path('usage/', UsageView.as_view(), name='subscription-usage'),
-] 
+    re_path(r'^plans/?$', PlanListView.as_view(), name='plan-list'),
+    re_path(r'^plans/(?P<pk>\d+)/?$', PlanDetailView.as_view(), name='plan-detail'),
+    re_path(r'^$', SubscriptionListView.as_view(), name='subscription-list'),
+    re_path(r'^(?P<pk>\d+)/?$', SubscriptionDetailView.as_view(), name='subscription-detail'),
+    re_path(r'^usage/?$', UsageView.as_view(), name='subscription-usage'),
+]

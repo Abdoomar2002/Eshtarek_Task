@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import re_path
 from .views import (
     InvoiceListView,
     InvoiceDetailView,
@@ -10,11 +10,11 @@ from .views import (
 )
 
 urlpatterns = [
-    path('invoices/', InvoiceListView.as_view(), name='invoice-list'),
-    path('invoices/<int:pk>/', InvoiceDetailView.as_view(), name='invoice-detail'),
-    path('payments/', PaymentListView.as_view(), name='payment-list'),
-    path('process-payment/', process_payment, name='process-payment'),
-    path('history/', billing_history, name='billing-history'),
-    path('analytics/', billing_analytics, name='billing-analytics'),
-    path('create-subscription-invoice/', create_subscription_invoice, name='create-subscription-invoice'),
-] 
+    re_path(r'^invoices/?$', InvoiceListView.as_view(), name='invoice-list'),
+    re_path(r'^invoices/(?P<pk>\d+)/?$', InvoiceDetailView.as_view(), name='invoice-detail'),
+    re_path(r'^payments/?$', PaymentListView.as_view(), name='payment-list'),
+    re_path(r'^process-payment/?$', process_payment, name='process-payment'),
+    re_path(r'^history/?$', billing_history, name='billing-history'),
+    re_path(r'^analytics/?$', billing_analytics, name='billing-analytics'),
+    re_path(r'^create-subscription-invoice/?$', create_subscription_invoice, name='create-subscription-invoice'),
+]

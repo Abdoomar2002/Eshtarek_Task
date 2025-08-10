@@ -282,7 +282,7 @@ const Users: React.FC = () => {
   };
 
   // Filter users based on search and filters
-  const filteredUsers = users?.filter(user => {
+  const filteredUsers = users?.data?.results?.filter(user => {
     const matchesSearch = 
       user.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.last_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -326,9 +326,9 @@ const Users: React.FC = () => {
     );
   }
 
-  const activeUsers = users?.filter(u => u.is_active).length || 0;
-  const inactiveUsers = users?.filter(u => !u.is_active).length || 0;
-  const adminUsers = users?.filter(u => u.role === 'admin' || u.role === 'tenant_admin').length || 0;
+  const activeUsers = users?.data?.results?.filter(u => u.is_active).length || 0;
+  const inactiveUsers = users?.data?.results?.filter(u => !u.is_active).length || 0;
+  const adminUsers = users?.data?.results?.filter(u => u.role === 'admin' || u.role === 'tenant_admin').length || 0;
 
   return (
     <Box>

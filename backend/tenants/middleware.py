@@ -53,7 +53,8 @@ class TenantMiddleware(MiddlewareMixin):
             '/health/',
         ]
         
-        return any(path.startswith(skip_path) for skip_path in skip_paths)
+        # Also skip paths without trailing slash equivalent to avoid interference
+        return any(path.startswith(skip_path) or path.startswith(skip_path.rstrip('/')) for skip_path in skip_paths)
     
     def _get_tenant_from_domain(self, request):
         """

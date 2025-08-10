@@ -1,0 +1,7 @@
+﻿--- Register
+status: 400
+body: b'{"password":["Ensure this field has at least 8 characters."]}'
+
+--- Login admin
+status: 200
+body: b'{"refresh":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc1NTQ1ODk5MCwiaWF0IjoxNzU0ODU0MTkwLCJqdGkiOiI4Y2QxYmNmYTNlZjY0ZWVjYWRlMTIwYmUyOWI4NjA2YSIsInVzZXJfaWQiOjF9.Xpw-YRTPdpwEvrMkliQBbfxtB7Gsj8UQVRMcHBcLW48","access":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzU0ODU3NzkwLCJpYXQiOjE3NTQ4NTQxOTAsImp0aSI6ImYzMTcwZjc5OTQ4YTQwZDg4MGI0ZDM3ZjYxY2Y1M2MyIiwidXNlcl9pZCI6MX0.TzBKx0bNH-YHadnDOpY4HXGoVU37c40Fs9EeasDu930","user":{"id":1,"e'

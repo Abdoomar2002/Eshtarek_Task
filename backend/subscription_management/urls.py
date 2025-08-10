@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework import permissions
@@ -28,12 +28,12 @@ urlpatterns = [
     path('api/docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('api/redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     
-    # API endpoints
-    path('api/auth/', include('accounts.urls')),
-    path('api/tenants/', include('tenants.urls')),
-    path('api/subscriptions/', include('subscriptions.urls')),
-    path('api/billing/', include('billing.urls')),
-    path('api/users/', include('accounts.user_urls')),
+    # API endpoints (accept with/without trailing slash at the prefix)
+    re_path(r'^api/auth/?', include('accounts.urls')),
+    re_path(r'^api/tenants/?', include('tenants.urls')),
+    re_path(r'^api/subscriptions/?', include('subscriptions.urls')),
+    re_path(r'^api/billing/?', include('billing.urls')),
+    re_path(r'^api/users/?', include('accounts.user_urls')),
 ]
 
 # Serve static and media files in development

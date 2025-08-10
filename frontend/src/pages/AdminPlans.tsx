@@ -291,7 +291,7 @@ const AdminPlans: React.FC = () => {
 
       {/* Plans Grid */}
       <Grid container spacing={3}>
-        {plans?.map((plan) => (
+        {plans?.data?.results?.map((plan) => (
           <Grid item xs={12} md={6} lg={4} key={plan.id}>
             <Card 
               sx={{ 

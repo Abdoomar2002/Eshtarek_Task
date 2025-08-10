@@ -21,7 +21,8 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         if response.status_code == 200:
             # Add user and tenant information to response
             user = authenticate(
-                email=request.data.get('email'),
+                request,
+                username=request.data.get('email'),
                 password=request.data.get('password')
             )
             if user:

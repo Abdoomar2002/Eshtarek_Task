@@ -13,8 +13,9 @@ A comprehensive subscription management platform built with Django and React, su
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Docker and Docker Compose installed
 - Git
+- Option A: Docker and Docker Compose
+- Option B: Local Python 3.12+ and Node 18+
 
 ### Setup Instructions
 
@@ -25,9 +26,28 @@ A comprehensive subscription management platform built with Django and React, su
    ```
 
 2. **Start the Application**
-   ```bash
-   docker-compose up --build
-   ```
+   - Option A (Docker):
+     ```bash
+     docker-compose up --build
+     ```
+   - Option B (Local dev):
+     ```bash
+     # Backend
+     cd backend
+     python -m venv .venv
+     .venv\Scripts\pip install -r requirements.txt
+     set DB_ENGINE=sqlite3
+     .venv\Scripts\python manage.py migrate
+     .venv\Scripts\python manage.py loaddata sample_data.json
+     .venv\Scripts\python manage.py create_superuser
+     .venv\Scripts\python manage.py runserver 127.0.0.1:8000
+
+     # In a second terminal - Frontend
+     cd frontend
+     npm ci
+     set REACT_APP_API_URL=http://127.0.0.1:8000/api
+     npm start
+     ```
 
 3. **Access the Application**
    - Frontend: http://localhost:3000
@@ -69,15 +89,15 @@ The system comes with pre-loaded sample data:
 - `POST /api/auth/logout/` - User logout
 - `GET /api/auth/me/` - Get current user info
 
-### Request Format
+### Registration Request Format
 ```json
 {
   "email": "user@example.com",
   "password": "password123",
-  "tenant": {
-    "name": "Company Name",
-    "description": "Company description"
-  }
+  "password2": "password123",
+  "first_name": "John",
+  "last_name": "Doe",
+  "tenant_name": "Company Name"
 }
 ```
 
@@ -191,6 +211,9 @@ docker-compose exec backend python manage.py test
 
 # Run frontend tests
 docker-compose exec frontend npm test
+
+# Run E2E smoke with Newman against local backend
+npx newman run Eshtarek_E2E_Smoke.postman_collection.json --env-var base_url=http://127.0.0.1:8000
 ```
 
 ## 📈 Usage Limits

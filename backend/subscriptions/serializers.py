@@ -35,6 +35,17 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
 
+    def create(self, validated_data):
+        """
+        Ensure tenant defaults to the current user's tenant when not provided,
+        preventing 403s for tenant admins who should only create within their scope.
+        """
+        request = self.context.get('request')
+        user = getattr(request, 'user', None)
+        if user and not validated_data.get('tenant') and getattr(user, 'tenant', None):
+            validated_data['tenant'] = user.tenant
+        return super().create(validated_data)
+
 
 class PlanChangeSerializer(serializers.ModelSerializer):
     """

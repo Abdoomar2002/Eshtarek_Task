@@ -1,7 +1,7 @@
-from django.urls import path
+from django.urls import re_path
 from .views import TenantListView, TenantDetailView
 
 urlpatterns = [
-    path('', TenantListView.as_view(), name='tenant-list'),
-    path('<int:pk>/', TenantDetailView.as_view(), name='tenant-detail'),
-] 
+    re_path(r'^$', TenantListView.as_view(), name='tenant-list'),
+    re_path(r'^(?P<pk>\d+)/?$', TenantDetailView.as_view(), name='tenant-detail'),
+]

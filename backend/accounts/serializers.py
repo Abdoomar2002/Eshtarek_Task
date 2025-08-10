@@ -29,29 +29,58 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
-    """Serializer for user registration."""
+    """Serializer for user registration.
+    Accepts either tenant JSON object or a simple tenant_name string for convenience.
+    """
     password = serializers.CharField(write_only=True, min_length=8)
-    password_confirm = serializers.CharField(write_only=True)
+    # Accept either password_confirm or password2 from clients
+    password_confirm = serializers.CharField(write_only=True, required=False, allow_blank=True)
+    password2 = serializers.CharField(write_only=True, required=False, allow_blank=True)
     tenant = serializers.JSONField(required=False)
+    tenant_name = serializers.CharField(write_only=True, required=False, allow_blank=True)
     
     class Meta:
         model = User
         fields = [
-            'email', 'first_name', 'last_name', 'password', 'password_confirm',
-            'phone_number', 'tenant'
+            'email', 'first_name', 'last_name', 'password', 'password_confirm', 'password2',
+            'phone_number', 'tenant', 'tenant_name'
         ]
+        extra_kwargs = {
+            'first_name': {'required': False, 'allow_blank': True},
+            'last_name': {'required': False, 'allow_blank': True},
+        }
     
     def validate(self, attrs):
-        if attrs['password'] != attrs['password_confirm']:
+        password = attrs.get('password')
+        # Support both password_confirm and password2 as confirmation
+        password_confirm = attrs.get('password_confirm') or attrs.get('password2')
+        if password_confirm and password != password_confirm:
             raise serializers.ValidationError("Passwords don't match")
+        # If confirm not provided, accept password as-is
         return attrs
     
     def create(self, validated_data):
-        validated_data.pop('password_confirm')
-        tenant_data = validated_data.pop('tenant', None)
-        
-        # Create user
-        user = User.objects.create_user(**validated_data)
+        # Pop optional confirmation fields if present (avoid KeyError)
+        validated_data.pop('password_confirm', None)
+        validated_data.pop('password2', None)
+
+        # Determine tenant assignment
+        tenant_instance = validated_data.pop('tenant', None)
+        tenant_name = validated_data.pop('tenant_name', '').strip() if 'tenant_name' in validated_data else ''
+
+        # If tenant was provided as a JSON object (not an instance), ignore it here since
+        # the view already handles tenant creation. Only instances are accepted at this point.
+
+        # Elevate role when registering with a tenant
+        if tenant_instance or tenant_name:
+            validated_data.setdefault('role', 'tenant_admin')
+            validated_data.setdefault('is_tenant_admin', True)
+
+        # Create user with tenant if instance provided
+        if tenant_instance is not None:
+            user = User.objects.create_user(tenant=tenant_instance, **validated_data)
+        else:
+            user = User.objects.create_user(**validated_data)
         
         # Create profile
         UserProfile.objects.create(user=user)

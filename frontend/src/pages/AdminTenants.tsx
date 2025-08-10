@@ -207,7 +207,8 @@ const AdminTenants: React.FC = () => {
   };
 
   // Filter tenants based on search and status
-  const filteredTenants = tenants?.filter(tenant => {
+  
+  const filteredTenants = tenants?.data?.results?.filter(tenant => {
     const matchesSearch = tenant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          tenant.contact_email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || 
@@ -282,19 +283,19 @@ const AdminTenants: React.FC = () => {
               <Box display="flex" gap={1}>
                 <Chip
                   icon={<Business />}
-                  label={`${tenants?.length || 0} Total`}
+                  label={`${tenants?.data?.results?.length || 0} Total`}
                   color="primary"
                   variant="outlined"
                 />
                 <Chip
                   icon={<CheckCircle />}
-                  label={`${tenants?.filter(t => t.is_active).length || 0} Active`}
+                  label={`${tenants?.data?.results?.filter(t => t.is_active).length || 0} Active`}
                   color="success"
                   variant="outlined"
                 />
                 <Chip
                   icon={<Warning />}
-                  label={`${tenants?.filter(t => !t.is_active).length || 0} Inactive`}
+                  label={`${tenants?.data?.results?.filter(t => !t.is_active).length || 0} Inactive`}
                   color="warning"
                   variant="outlined"
                 />

@@ -68,8 +68,8 @@ const Dashboard: React.FC = () => {
     try {
       setLoading(true);
       
-      // Fetch tenant information
-      const tenantResponse = await api.get(`/tenants/${user?.tenant?.id}/`);
+      // Fetch current user profile with embedded tenant info (tenant admins don't have access to /tenants/)
+      const meResponse = await api.get('/auth/me/');
       
       // Fetch usage data
       const usageResponse = await api.get('/subscriptions/usage/');
@@ -78,7 +78,7 @@ const Dashboard: React.FC = () => {
       const billingResponse = await api.get('/billing/analytics/');
       
       setDashboardData({
-        tenant: tenantResponse.data,
+        tenant: meResponse.data.tenant || {},
         usage: usageResponse.data,
         limits: usageResponse.data.limits,
         billing: billingResponse.data,

@@ -168,11 +168,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       dispatch({ type: 'SET_LOADING', payload: true });
       
       const response = await api.post('/auth/login/', { email, password });
-      const { user, tokens } = response.data;
+      const { user } = response.data;
+      const normalizedTokens = {
+        access: response.data.access || response.data.tokens?.access,
+        refresh: response.data.refresh || response.data.tokens?.refresh,
+      } as { access: string; refresh: string };
 
       dispatch({
         type: 'LOGIN_SUCCESS',
-        payload: { user, tokens },
+        payload: { user, tokens: normalizedTokens },
       });
 
       toast.success('Login successful!');
@@ -180,6 +184,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const message = error.response?.data?.message || 'Login failed';
       toast.error(message);
       throw error;
+    } finally {
+      // Ensure loading state resets on failure as well
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
   };
 
@@ -189,11 +196,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       dispatch({ type: 'SET_LOADING', payload: true });
       
       const response = await api.post('/auth/register/', userData);
-      const { user, tokens } = response.data;
+      const { user } = response.data;
+      const normalizedTokens = {
+        access: response.data.access || response.data.tokens?.access,
+        refresh: response.data.refresh || response.data.tokens?.refresh,
+      } as { access: string; refresh: string };
 
       dispatch({
         type: 'LOGIN_SUCCESS',
-        payload: { user, tokens },
+        payload: { user, tokens: normalizedTokens },
       });
 
       toast.success('Registration successful!');
@@ -201,6 +212,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const message = error.response?.data?.message || 'Registration failed';
       toast.error(message);
       throw error;
+    } finally {
+      // Ensure loading state resets on failure
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
   };
 
